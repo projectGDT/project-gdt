@@ -27,9 +27,7 @@ function Login() {
   const [notClicked, setNotClicked] = useState(true);
 
   if (sessionStorage.getItem('jwt')) {
-    return (
-      <Navigate to={redirectTo} />
-    );
+    return <Navigate to={redirectTo} />;
   }
 
   return (

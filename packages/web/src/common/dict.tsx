@@ -96,7 +96,7 @@ export const dict = {
           javaLittleSkin: 'Java 版 LittleSkin Profile',
           xbox: '基岩版（Xbox）Profile',
           offline: '离线 Profile',
-        }
+        },
       },
     },
   },

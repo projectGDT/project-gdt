@@ -158,7 +158,11 @@ function Register() {
     </Box>,
     <Box key={'verify'} display={'flex'} flexDirection={'column'} gap={2}>
       <Typography>{dict.register.verify.content(verifyChatId)}</Typography>
-      <Typography variant={'h4'} sx={{ alignSelf: 'center' }}><b><code>{verifyCode}</code></b></Typography>
+      <Typography variant={'h4'} sx={{ alignSelf: 'center' }}>
+        <b>
+          <code>{verifyCode}</code>
+        </b>
+      </Typography>
     </Box>,
     <Box key={'success'} display={'flex'} flexDirection={'column'} gap={2}>
       <Typography>{dict.register.success.welcome}</Typography>
