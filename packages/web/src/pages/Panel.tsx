@@ -22,7 +22,7 @@ import {
 } from '@mui/icons-material';
 import { dict } from '../common/dict.tsx';
 import { Fragment } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 
 interface Navigation {
   href: string;
@@ -101,6 +101,10 @@ function NavigationButton({ href, icon: Icon, display, additional }: Navigation)
 }
 
 function Panel() {
+  if (!sessionStorage.getItem('jwt')) {
+    return <Navigate to={'/login'} />;
+  }
+
   const pathName = window.location.pathname;
   const breadcrumbRaw = pathName.split('/');
   breadcrumbRaw.splice(0, 2);

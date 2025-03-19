@@ -11,7 +11,7 @@ import md5 from 'md5';
 function Login() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const redirectTo = params.get('redirectTo') ?? '/';
+  const redirectTo = params.get('redirectTo') ?? '/panel';
 
   const [incorrectCredentialsOpen, setIncorrectCredentialsOpen] = useState(false);
 
