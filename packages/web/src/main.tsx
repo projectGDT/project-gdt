@@ -5,6 +5,7 @@ import App from './App.tsx';
 import './fonts.jsx';
 import Register from './pages/Register.tsx';
 import Login from './pages/Login.tsx';
+import Panel from './pages/Panel.tsx';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
         path: '/register',
         element: <Register />,
       },
+      {
+        path: '/panel',
+        element: <Panel />,
+      }
     ],
   },
 ]);
