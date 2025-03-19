@@ -1,0 +1,25 @@
+{
+  "trailingComma": "es5",
+  "tabWidth": 4,
+  "semi": true,
+  "singleQuote": true,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "printWidth": 120,
+  "endOfLine": "auto",
+  "overrides": [
+    {
+      "files": "*.json",
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 200
+      }
+    },
+    {
+      "files": "packages/web/**/*",
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}

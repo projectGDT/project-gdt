@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id               Int               @id @default(autoincrement())
+  chatId           String            @unique
+  username         String            @unique // unique alias only for login
+  pwMD5            String // digested password in base64
+  isSiteAdmin      Boolean           @default(false)
+  profiles         Profile[]
+  ownedServers     Server[]          @relation("owning")
+  involvedServers  PlayerInServer[]  @relation("involving")
+  applyingSessions ApplyingSession[]
+}
+
+model Server {
+  id               Int               @id @default(autoincrement())
+  tokenMD5         Bytes
+  channelId        String            @unique
+  name             String
+  logoLink         String
+  coverLink        String
+  introduction     String
+  ownerId          Int
+  owner            Player            @relation("owning", fields: [ownerId], references: [id], onDelete: NoAction)
+  players          PlayerInServer[]  @relation("involving")
+  javaRemote       JavaRemote?
+  bedrockRemote    BedrockRemote?
+  applyingPolicy   ApplyingPolicy
+  applyingSessions ApplyingSession[]
+}
+
+enum ApplyingPolicy {
+  CLOSED
+  ALL_OPEN
+  BY_FORM
+}
+
+model PlayerInServer {
+  playerId         Int
+  serverId         Int
+  playerIsOperator Boolean
+  player           Player  @relation("involving", fields: [playerId], references: [id], onDelete: Cascade)
+  server           Server  @relation("involving", fields: [serverId], references: [id], onDelete: Cascade)
+
+  @@id([playerId, serverId])
+}
+
+model Profile {
+  uniqueIdProvider Int // Microsoft: -1; LittleSkin: -2; Xbox: -3; Offline: matching serverId
+  uniqueId         String // Microsoft & LittleSkin: UUID; Xbox: XUID as String; Offline: playerName
+  playerId         Int
+  cachedPlayerName String // Microsoft & LittleSkin & Offline: playerName; Xbox: Xbox Gamer Tag
+  player           Player @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@id([uniqueIdProvider, uniqueId])
+  @@unique([playerId, uniqueIdProvider])
+}
+
+model JavaRemote {
+  serverId           Int     @id
+  address            String
+  port               Int
+  coreVersion        String
+  compatibleVersions Json // an array whose items are strings
+  uniqueIdProvider   Int
+  modpackVersionId   String? // get version dependencies from https://api.modrinth.com/v2/version/${id}
+  server             Server  @relation(fields: [serverId], references: [id], onDelete: Cascade)
+}
+
+model BedrockRemote {
+  serverId           Int    @id
+  address            String
+  port               Int
+  coreVersion        String
+  compatibleVersions Json
+  server             Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
+}
+
+model ApplyingSession {
+  id               Int          @id @default(autoincrement())
+  playerId         Int
+  serverId         Int
+  formId           String
+  payload          Json
+  createdAt        DateTime     @default(now())
+  state            SessionState @default(REVIEWING)
+  profileActivated Boolean      @default(false) // whether the player has binded the corresponding profile
+  groupActivated   Boolean      @default(false) // whether the player has entered the group
+  handledBy        Int          @default(-1) // -1 for unhandled, 0 for handled by "nobody"
+  player           Player       @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  server           Server       @relation(fields: [serverId], references: [id], onDelete: Cascade)
+}
+
+enum SessionState {
+  REVIEWING
+  ACCEPTED_PENDING
+  REJECTED_UNREAD
+  ACTIVATED // After the player joins the QQ group
+  REJECTED_READ
+}
+
+model InvitationCode {
+  serverId      Int
+  value         String   @id // a UUID
+  issuedBy      Int
+  issuedAt      DateTime @default(now())
+  lifetime      Int // given in seconds; permanent: -1
+  reusableTimes Int // infinite times: -1
+}
+
+model ServerForm {
+  uuid     String  @id
+  serverId Int
+  body     Json
+  isLatest Boolean
+}
+
+model AccessApplyPayload {
+  id              Int                     @id @default(autoincrement())
+  submittedBy     Int
+  payload         Json
+  createdAt       DateTime                @default(now())
+  state           AccessApplySessionState @default(REVIEWING)
+  botActivated    Boolean                 @default(false) // whether the bot is invited into the corresponding group
+  pluginActivated Boolean                 @default(false) // whether the plugin is correctly installed and has performed the first handshake
+}
+
+enum AccessApplySessionState {
+  REVIEWING
+  ACCEPTED_PENDING
+  ACTIVATED // after all modules are enabled on the server
+  REJECTED_UNREAD
+  REJECTED_READ
+}
