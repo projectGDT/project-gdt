@@ -16,10 +16,12 @@ function AccountMenu() {
 
   useEffect(() => {
     if (jwt) {
-      trpc.user.getUnreadCount.query().then((result) => {
-        setUnreadCount(
-          result.submittedApplyUnreadCount + result.submittedAccessUnreadCount + result.receivedApplyUnreadCount
-        );
+      trpc.user.settleRejected.mutate().then(() => {
+        trpc.user.getUnreadCount.query().then((result) => {
+          setUnreadCount(
+            result.submittedApplyUnreadCount + result.submittedAccessUnreadCount + result.receivedApplyUnreadCount
+          );
+        });
       });
     } else {
       setUnreadCount(0);
