@@ -14,6 +14,8 @@ import { ConfirmProvider } from 'material-ui-confirm';
 import { Outlet } from 'react-router-dom';
 import { dict } from './common/dict.tsx';
 
+import AccountMenu from './common/components/AccountMenu.tsx';
+
 const gdtTheme = createTheme({
   typography: {
     fontFamily: ['"Inter"', '"Noto Sans SC Variable"', 'sans-serif'].join(','),
@@ -37,62 +39,65 @@ const gdtTheme = createTheme({
 });
 
 function App() {
-  return <ThemeProvider theme={gdtTheme}>
-    <ConfirmProvider
-      defaultOptions={{
-        title: dict.common.confirm,
-        confirmationText: dict.common.ok,
-        cancellationText: dict.common.cancel,
-      }}
-    >
-      <CssBaseline />
-      <GlobalStyles
-        styles={{
-          code: {
-            fontFamily: '"JetBrains Mono Variable", "Noto Sans SC Variable", monospace, sans-serif',
-            backgroundColor: darken(gdtTheme.palette.background.default, 0.07),
-            borderRadius: '0.25rem',
-            padding: '0.25rem 0.5rem',
-            margin: '0 0.25rem',
-          },
-          pre: {
-            backgroundColor: darken(gdtTheme.palette.background.default, 0.07),
-            borderRadius: '0.25rem',
-            padding: '0.25rem 0.5rem',
-          },
-          'pre > code': {
-            borderRadius: '0',
-            padding: '0',
-          },
-          blockquote: {
-            margin: 0,
-            backgroundColor: darken(gdtTheme.palette.background.default, 0.07),
-            padding: '0.25rem 0.5rem',
-          },
+  return (
+    <ThemeProvider theme={gdtTheme}>
+      <ConfirmProvider
+        defaultOptions={{
+          title: dict.common.confirm,
+          confirmationText: dict.common.ok,
+          cancellationText: dict.common.cancel,
         }}
-      />
-
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar disableGutters sx={{ paddingX: 2 }}>
-          <Avatar src="/logo.svg" sx={{ width: 40, height: 40 }} variant={'square'} />
-          <Typography variant={'h6'} sx={{ paddingX: 1, flexGrow: 1 }}>
-            <b>projectGDT</b>
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
-      <Box
-        display={'flex'}
-        flexDirection={'column'}
-        alignItems={'stretch'}
-        height={'100vh'}
-        sx={{ backgroundColor: 'background.default' }}
       >
-        <Toolbar />
-        <Outlet />
-      </Box>
-    </ConfirmProvider>
-  </ThemeProvider>;
+        <CssBaseline />
+        <GlobalStyles
+          styles={{
+            code: {
+              fontFamily: '"JetBrains Mono Variable", "Noto Sans SC Variable", monospace, sans-serif',
+              backgroundColor: darken(gdtTheme.palette.background.default, 0.07),
+              borderRadius: '0.25rem',
+              padding: '0.25rem 0.5rem',
+              margin: '0 0.25rem',
+            },
+            pre: {
+              backgroundColor: darken(gdtTheme.palette.background.default, 0.07),
+              borderRadius: '0.25rem',
+              padding: '0.25rem 0.5rem',
+            },
+            'pre > code': {
+              borderRadius: '0',
+              padding: '0',
+            },
+            blockquote: {
+              margin: 0,
+              backgroundColor: darken(gdtTheme.palette.background.default, 0.07),
+              padding: '0.25rem 0.5rem',
+            },
+          }}
+        />
+
+        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+          <Toolbar disableGutters sx={{ paddingX: 2 }}>
+            <Avatar src="/logo.svg" sx={{ width: 40, height: 40 }} variant={'square'} />
+            <Typography variant={'h6'} sx={{ paddingX: 1, flexGrow: 1 }}>
+              <b>projectGDT</b>
+            </Typography>
+            <AccountMenu />
+          </Toolbar>
+        </AppBar>
+
+        <Box
+          display={'flex'}
+          flexDirection={'column'}
+          alignItems={'stretch'}
+          height={'100vh'}
+          sx={{ backgroundColor: 'background.default' }}
+        >
+          <Toolbar />
+          <Outlet />
+        </Box>
+      </ConfirmProvider>
+    </ThemeProvider>
+  );
 }
 
 export default App;

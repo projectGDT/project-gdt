@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useImmer } from 'use-immer';
 import ValidatorTextField from '../common/components/ValidatorTextField';
 import { inOrder, validator } from '../common/validator';
-import { trpc } from '../common/trpc';
+import { setLoginResult, trpc } from '../common/trpc';
 import md5 from 'md5';
 
 const chatIdRegex = /^[1-9][0-9]{4,9}$/;
@@ -131,7 +131,11 @@ function Register() {
                   setActiveStep(1);
                 } else if (value.step === 'Success') {
                   session.unsubscribe();
-                  sessionStorage.setItem('jwt', value.jwt);
+                  setLoginResult({
+                    id: value.id,
+                    username,
+                    jwt: value.jwt,
+                  });
                   setNavigateToProfile(value.navigateToProfile);
                   setActiveStep(2);
                 }

@@ -26,10 +26,7 @@ export const login = publicProc
             include: { ownedServers: { select: { id: true } }, involvedServers: true },
         });
         if (!user) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Username or password is incorrect',
-            });
+            return null;
         }
 
         return {

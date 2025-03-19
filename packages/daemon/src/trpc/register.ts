@@ -46,6 +46,7 @@ export const registerSubmit = publicProc
             }),
             z.object({
                 step: z.literal('Success'),
+                id: z.number(),
                 jwt: z.string(),
                 navigateToProfile: z.array(z.number()),
             }),
@@ -144,6 +145,7 @@ export const registerSubmit = publicProc
 
         yield {
             step: 'Success',
+            id: player.id,
             jwt: signJwt({
                 id: player.id,
                 isSiteAdmin: false,
