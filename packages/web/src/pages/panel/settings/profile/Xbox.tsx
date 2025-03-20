@@ -69,7 +69,7 @@ function Xbox() {
       </Collapse>
 
       <Collapse in={showComplete} sx={{ alignSelf: 'stretch' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box display={'flex'} flexDirection={'column'} gap={2}>
           <Paper elevation={2} sx={{ padding: 1.5 }}>
             <Typography variant={'h6'}>{dict.settings.profile.bind.xbox.complete}</Typography>
             <ProfileDisplay uniqueIdProvider={-3} uniqueId={xuid} cachedPlayerName={xboxGamerTag} />
