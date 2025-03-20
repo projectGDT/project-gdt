@@ -35,9 +35,15 @@ export const publicProc = baseProc.use(async ({ ctx, next, path }) => {
     const begin = Date.now();
     const result = await next({ ctx });
     const end = Date.now();
-    trpcLogger.info(`PublicProc[${path}] call from ${
-        ctx.auth ? `id ${ctx.auth.id} (${ctx.ip})` : ctx.ip
-    }: ${result.ok ? 'Ok' : 'Err'} in ${end - begin}ms`);
+    if (result.ok) {
+        trpcLogger.info(
+            `PublicProc[${path}] call from ${ctx.auth ? `id ${ctx.auth.id} (${ctx.ip})` : ctx.ip}: ok in ${end - begin}ms`
+        );
+    } else {
+        trpcLogger.warn(
+            `PublicProc[${path}] call from ${ctx.auth ? `id ${ctx.auth.id} (${ctx.ip})` : ctx.ip}: ${result.error.code} in ${end - begin}ms`
+        );
+    }
     return result;
 });
 
@@ -52,7 +58,13 @@ export const authProc = baseProc.use(async ({ ctx, next, path }) => {
     const begin = Date.now();
     const result = await next({ ctx: { auth: ctx.auth } });
     const end = Date.now();
-    trpcLogger.info(`AuthProc[${path}] call from id ${ctx.auth.id} (${ctx.ip}): ${result.ok ? 'Ok' : 'Err'} in ${end - begin}ms`);
+    if (result.ok) {
+        trpcLogger.info(`AuthProc[${path}] call from id ${ctx.auth.id} (${ctx.ip}): ok in ${end - begin}ms`);
+    } else {
+        trpcLogger.warn(
+            `AuthProc[${path}] call from id ${ctx.auth.id} (${ctx.ip}): ${result.error.code} in ${end - begin}ms`
+        );
+    }
     return result;
 });
 
