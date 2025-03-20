@@ -16,12 +16,10 @@ function AccountMenu() {
 
   useEffect(() => {
     if (jwt) {
-      trpc.user.settleRejected.mutate().then(() => {
-        trpc.user.getUnreadCount.query().then((result) => {
-          setUnreadCount(
-            result.submittedApplyUnreadCount + result.submittedAccessUnreadCount + result.receivedApplyUnreadCount
-          );
-        });
+      trpc.user.getUnreadCount.query().then((result) => {
+        setUnreadCount(
+          result.submittedApplyUnreadCount + result.submittedAccessUnreadCount + result.receivedApplyUnreadCount
+        );
       });
     } else {
       setUnreadCount(0);
@@ -58,7 +56,10 @@ function AccountMenu() {
           setAnchorEl(null);
         }}
       >
-        <MenuItem href={'/message'} onClick={() => setRefreshFlag((prev) => prev + 1)}>
+        <MenuItem onClick={async () => {
+          await trpc.user.settleRejected.mutate();
+          setRefreshFlag((prev) => prev + 1);
+        }}>
           <ListItemIcon>
             <MailOutline fontSize={'small'} />
           </ListItemIcon>
