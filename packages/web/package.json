@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "cross-env VITE_TRPC_API_URL=http://localhost:14590/api/trpc vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
