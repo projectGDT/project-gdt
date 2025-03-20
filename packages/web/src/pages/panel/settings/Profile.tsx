@@ -55,7 +55,7 @@ function Profile() {
         <Typography variant={'h5'}>{dict.settings.profile.title}</Typography>
       </Box>
       <Paper>
-        <List>
+        <List disablePadding={true}>
           {loading ? (
             <>
               <Skeleton width={'100%'} height={100} />

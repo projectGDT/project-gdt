@@ -21,7 +21,7 @@ function Settings() {
         <Typography variant={'h5'}>{dict.settings.title}</Typography>
       </Box>
       <Paper>
-        <List>
+        <List disablePadding={true}>
           <ListItemButton href={'/panel/settings/profile'}>
             <ListItemText
               primary={dict.settings.profile.title}
