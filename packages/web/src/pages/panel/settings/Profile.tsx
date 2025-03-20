@@ -72,12 +72,14 @@ function Profile() {
                   secondaryAction={
                     <IconButton
                       onClick={async () => {
-                        await confirm({
+                        const result = await confirm({
                           description: dict.settings.profile.onDelete,
                         });
-                        setLoading(true);
-                        await trpc.user.profile.delete.mutate({ uniqueIdProvider: javaMsProfile.uniqueIdProvider });
-                        setUserModifyFlag((prev) => prev + 1);
+                        if (result.confirmed) {
+                          setLoading(true);
+                          await trpc.user.profile.delete.mutate({ uniqueIdProvider: javaMsProfile.uniqueIdProvider });
+                          setUserModifyFlag((prev) => prev + 1);
+                        }
                       }}
                     >
                       <DeleteOutlineOutlined />
@@ -104,12 +106,14 @@ function Profile() {
                   secondaryAction={
                     <IconButton
                       onClick={async () => {
-                        await confirm({
+                        const result = await confirm({
                           description: dict.settings.profile.onDelete,
                         });
-                        setLoading(true);
-                        await trpc.user.profile.delete.mutate({ uniqueIdProvider: xboxProfile.uniqueIdProvider });
-                        setUserModifyFlag((prev) => prev + 1);
+                        if (result.confirmed) {
+                          setLoading(true);
+                          await trpc.user.profile.delete.mutate({ uniqueIdProvider: xboxProfile.uniqueIdProvider });
+                          setUserModifyFlag((prev) => prev + 1);
+                        }
                       }}
                     >
                       <DeleteOutlineOutlined />
