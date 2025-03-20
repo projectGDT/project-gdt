@@ -6,6 +6,8 @@ import { appRouter } from '@/trpc';
 import { createAuthContext } from '@/common/auth';
 import { PrismaClient } from '@prisma/client';
 import log4js from 'log4js';
+import * as http from 'node:http';
+import { promisify } from 'node:util';
 
 log4js.configure({
     appenders: {
@@ -34,6 +36,7 @@ export type CallbackMap = Map<string, {
 }>;
 
 export class App {
+    readonly httpServer: http.Server;
     readonly callbackMap: CallbackMap = new Map();
 
     constructor(
@@ -59,6 +62,8 @@ export class App {
             },
         }));
 
+        this.httpServer = http.createServer(expressApp);
+
         this.setUpBot();
     }
 
@@ -81,8 +86,16 @@ export class App {
     }
 
     async start() {
-        this.expressApp.listen(this.config.port, () => {
+        this.httpServer.listen(this.config.port, () => {
             appLogger.info(`Listening on port ${this.config.port}`);
         });
+    }
+
+    async stop() {
+        appLogger.info('Stopping the app');
+        this.httpServer.closeAllConnections();
+        await promisify(this.httpServer.close.bind(this.httpServer))();
+        await this.prisma.$disconnect();
+        await this.bot.dispose();
     }
 }

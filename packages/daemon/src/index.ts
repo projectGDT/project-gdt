@@ -40,6 +40,10 @@ async function main() {
     );
 
     await app.start();
+
+    process.on('SIGINT', () => {
+        app.stop().then(() => process.exit(0));
+    });
 }
 
 main();
