@@ -6,6 +6,8 @@ import './fonts.jsx';
 import Register from './pages/Register.tsx';
 import Login from './pages/Login.tsx';
 import Panel from './pages/Panel.tsx';
+import { SettingsLayout, Settings } from './pages/panel/Settings.tsx';
+import Profile from './pages/panel/settings/Profile.tsx';
 
 const router = createBrowserRouter([
   {
@@ -23,7 +25,23 @@ const router = createBrowserRouter([
       {
         path: '/panel',
         element: <Panel />,
-      }
+        children: [
+          {
+            path: 'settings',
+            element: <SettingsLayout />,
+            children: [
+              {
+                path: '',
+                element: <Settings />,
+              },
+              {
+                path: 'profile',
+                element: <Profile />,
+              }
+            ],
+          },
+        ],
+      },
     ],
   },
 ]);
