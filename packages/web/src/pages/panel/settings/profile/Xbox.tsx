@@ -1,4 +1,14 @@
-import { Alert, Box, Button, Collapse, LinearProgress, Paper, Snackbar, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Collapse, Divider,
+  LinearProgress,
+  List, ListSubheader,
+  Paper,
+  Snackbar,
+  Typography,
+} from '@mui/material';
 import { useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { dict } from '../../../../common/dict';
@@ -70,9 +80,12 @@ function Xbox() {
 
       <Collapse in={showComplete} sx={{ alignSelf: 'stretch' }}>
         <Box display={'flex'} flexDirection={'column'} gap={2}>
-          <Paper elevation={2} sx={{ padding: 1.5 }}>
-            <Typography variant={'h6'}>{dict.settings.profile.bind.xbox.complete}</Typography>
-            <ProfileDisplay uniqueIdProvider={-3} uniqueId={xuid} cachedPlayerName={xboxGamerTag} />
+          <Paper elevation={2}>
+            <List disablePadding={true}>
+              <ListSubheader>{dict.settings.profile.bind.xbox.complete}</ListSubheader>
+              <Divider />
+              <ProfileDisplay uniqueIdProvider={-3} uniqueId={xuid} cachedPlayerName={xboxGamerTag} />
+            </List>
           </Paper>
           <Button sx={{ alignSelf: 'center' }} href={'.'}>
             {dict.settings.profile.bind.goBack}
