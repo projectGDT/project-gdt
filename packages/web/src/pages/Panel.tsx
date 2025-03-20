@@ -127,7 +127,7 @@ function Panel() {
         sx={{ width: '20%' }}
       >
         <Toolbar />
-        <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        <Box display={'flex'} flexGrow={1}>
           <List sx={{ flexGrow: 1 }}>
             {navigation.map((entry, index) => (
               <Fragment key={index}>
