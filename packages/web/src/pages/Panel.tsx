@@ -108,6 +108,9 @@ function Panel() {
   const pathName = window.location.pathname;
   const breadcrumbRaw = pathName.split('/');
   breadcrumbRaw.splice(0, 2);
+  if (breadcrumbRaw[breadcrumbRaw.length - 1] === '') {
+    breadcrumbRaw.pop();
+  }
 
   return (
     <Box display={'flex'} flexGrow={1}>
