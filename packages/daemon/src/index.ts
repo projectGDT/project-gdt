@@ -14,6 +14,7 @@ const zEnv = z.object({
     WEB_URL: z.string().default('http://localhost:5173'),
     BOT_SIGN_API_URL: z.string(),
     VERIFY_CHAT_ID: z.string(),
+    XBOX_OAUTH_CLIENT_ID: z.string(),
 });
 
 async function main() {
@@ -34,6 +35,7 @@ async function main() {
             port: parseInt(env.PORT),
             webUrl: env.WEB_URL,
             verifyChatId: env.VERIFY_CHAT_ID.split(',').map(Number),
+            xboxOAuthClientId: env.XBOX_OAUTH_CLIENT_ID,
         }
     );
 

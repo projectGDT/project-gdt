@@ -8,6 +8,7 @@ import Login from './pages/Login.tsx';
 import Panel from './pages/Panel.tsx';
 import { SettingsLayout, Settings } from './pages/panel/Settings.tsx';
 import Profile from './pages/panel/settings/Profile.tsx';
+import Xbox from './pages/panel/settings/profile/Xbox.tsx';
 
 const router = createBrowserRouter([
   {
@@ -37,7 +38,11 @@ const router = createBrowserRouter([
               {
                 path: 'profile',
                 element: <Profile />,
-              }
+              },
+              {
+                path: 'profile/xbox',
+                element: <Xbox />,
+              },
             ],
           },
         ],

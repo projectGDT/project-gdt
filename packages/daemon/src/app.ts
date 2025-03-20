@@ -10,6 +10,7 @@ export interface AppConfig {
     port: number;
     webUrl: string;
     verifyChatId: number[];
+    xboxOAuthClientId: string;
 }
 
 export type CallbackMap = Map<string, {
