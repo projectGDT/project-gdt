@@ -209,7 +209,7 @@ function Register() {
           </Box>
           <Paper sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 3, flexGrow: 1 }}>
             <Snackbar open={errOpen} autoHideDuration={5000} onClose={() => setErrOpen(false)}>
-              <Alert severity="error" variant="filled">
+              <Alert severity={'error'} variant={'filled'}>
                 {errMsg}
               </Alert>
             </Snackbar>

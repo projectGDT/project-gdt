@@ -73,7 +73,7 @@ function AccountMenu() {
           }}
         >
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout fontSize={'small'} />
           </ListItemIcon>
           {dict.logout.title}
         </MenuItem>

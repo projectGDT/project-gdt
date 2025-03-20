@@ -171,7 +171,7 @@ function Profile() {
               <ListItem>
                 <ListItemText>
                   <Typography variant={'caption'}>
-                    Minecraft Head API provided by <Link href="https://minotar.net/">minotar.net</Link>
+                    Minecraft Head API provided by <Link href={'https://minotar.net/'}>minotar.net</Link>
                   </Typography>
                 </ListItemText>
               </ListItem>

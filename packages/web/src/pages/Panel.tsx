@@ -115,7 +115,7 @@ function Panel() {
   return (
     <Box display={'flex'} flexGrow={1}>
       <Drawer
-        variant="permanent"
+        variant={'permanent'}
         slotProps={{
           paper: {
             sx: {
