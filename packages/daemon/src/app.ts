@@ -9,12 +9,17 @@ import log4js from 'log4js';
 
 log4js.configure({
     appenders: {
-        trpc: { type: 'console' },
+        console: { type: 'console' },
     },
     categories: {
-        default: { appenders: ['trpc'], level: 'info' },
+        default: {
+            appenders: ['console'],
+            level: 'info'
+        },
     }
 });
+
+const appLogger = log4js.getLogger('app');
 
 export interface AppConfig {
     port: number;
@@ -67,6 +72,7 @@ export class App {
             if (!callback) {
                 return;
             }
+            appLogger.info(`Verify request from ${request.requestUin} to ${group.uin}`);
             if (!request.comment.trim().endsWith(callback.verifyCode)) {
                 return;
             }
@@ -76,7 +82,7 @@ export class App {
 
     async start() {
         this.expressApp.listen(this.config.port, () => {
-            console.log(`Listening on port ${this.config.port}`);
+            appLogger.info(`Listening on port ${this.config.port}`);
         });
     }
 }

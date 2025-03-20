@@ -8,6 +8,15 @@ import {
     newKeystore,
     serializeDeviceInfo, serializeKeystore, UrlSignProvider,
 } from 'tanebi';
+import { getLogger } from 'log4js';
+
+const botLogger = getLogger('bot');
+
+function installLogger(bot: Bot) {
+    bot.onDebug((module, message) => botLogger.debug(`[${module}] ${message}`));
+    bot.onInfo((module, message) => botLogger.info(`[${module}] ${message}`));
+    bot.onWarning((module, message) => botLogger.warn(`[${module}] ${message}`));
+}
 
 export async function createOnlineBot(signApiUrl: string) {
     let bot: Bot;
@@ -29,19 +38,21 @@ export async function createOnlineBot(signApiUrl: string) {
 
     let keystore: Keystore;
     if (!fs.existsSync('data/bot/keystore.json')) {
-        console.log('Credentials not found, performing QR code login...');
+        botLogger.info('Credentials not found, performing QR code login...');
         keystore = newKeystore();
         bot = await Bot.create(appInfo, {}, deviceInfo, keystore, signProvider);
+        installLogger(bot);
         await bot.qrCodeLogin((url, png) => {
             fs.writeFileSync('data/bot/qrcode.png', png);
-            console.log('QR code image saved to data/bot/qrcode.png.');
-            console.log('Or you can generate a QR code with the following URL:');
-            console.log(url);
+            botLogger.info('QR code image saved to data/bot/qrcode.png.');
+            botLogger.info('Or you can generate a QR code with the following URL:');
+            botLogger.info(url);
         });
         fs.writeFileSync('data/bot/keystore.json', JSON.stringify(serializeKeystore(bot[ctx].keystore)));
     } else {
         keystore = deserializeKeystore(JSON.parse(fs.readFileSync('data/bot/keystore.json', 'utf-8')));
         bot = await Bot.create(appInfo, {}, deviceInfo, keystore, signProvider);
+        installLogger(bot);
         await bot.fastLogin();
     }
     return bot;
