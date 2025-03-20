@@ -5,6 +5,16 @@ import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { appRouter } from '@/trpc';
 import { createAuthContext } from '@/common/auth';
 import { PrismaClient } from '@prisma/client';
+import log4js from 'log4js';
+
+log4js.configure({
+    appenders: {
+        trpc: { type: 'console' },
+    },
+    categories: {
+        default: { appenders: ['trpc'], level: 'info' },
+    }
+});
 
 export interface AppConfig {
     port: number;
@@ -35,6 +45,7 @@ export class App {
             router: appRouter,
             createContext: async ({ req }) => {
                 return {
+                    ip: req.headers['x-forwarded-for'] as string || req.ip || 'unknown',
                     ...(await createAuthContext(req.headers.authorization)),
                     prisma: prisma,
                     config: config,

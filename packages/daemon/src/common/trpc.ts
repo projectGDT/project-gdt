@@ -3,13 +3,17 @@ import { type AuthPayload } from '@/common/auth';
 import { z } from 'zod';
 import { AppConfig, CallbackMap } from '@/app';
 import { PrismaClient } from '@prisma/client';
+import { getLogger } from 'log4js';
 
 export interface Context {
+    ip: string;
     auth?: AuthPayload;
     prisma: PrismaClient;
     config: AppConfig;
     callbackMap: CallbackMap;
 }
+
+const trpcLogger = getLogger('trpc');
 
 const t = initTRPC.context<Context>().create({
     sse: {
@@ -25,26 +29,39 @@ const t = initTRPC.context<Context>().create({
 });
 
 export const router = t.router;
+const baseProc = t.procedure;
 
-export const publicProc = t.procedure;
+export const publicProc = baseProc.use(async ({ ctx, next, path }) => {
+    const begin = Date.now();
+    const result = await next({ ctx });
+    const end = Date.now();
+    trpcLogger.info(`PublicProc[${path}] call from ${
+        ctx.auth ? `id ${ctx.auth.id} (${ctx.ip})` : ctx.ip
+    }: ${result.ok ? 'Ok' : 'Err'} in ${end - begin}ms`);
+    return result;
+});
 
-export const authProc = publicProc
-    .use(({ ctx, next }) => {
-        if (!ctx.auth) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-            });
-        }
-        return next({ ctx: { auth: ctx.auth } });
-    });
+export const authProc = baseProc.use(async ({ ctx, next, path }) => {
+    if (!ctx.auth) {
+        trpcLogger.warn(`Unauthorized AuthProc[${path}] call from ${ctx.ip}`);
+        throw new TRPCError({
+            code: 'UNAUTHORIZED',
+        });
+    }
 
-export const serverManageProc = authProc
-    .input(z.object({ serverId: z.number() }))
-    .use(({ ctx, next, input }) => {
-        if (!ctx.auth.authorizedServers.includes(input.serverId)) {
-            throw new TRPCError({
-                code: 'FORBIDDEN',
-            });
-        }
-        return next({ ctx });
-    });
+    const begin = Date.now();
+    const result = await next({ ctx: { auth: ctx.auth } });
+    const end = Date.now();
+    trpcLogger.info(`AuthProc[${path}] call from id ${ctx.auth.id} (${ctx.ip}): ${result.ok ? 'Ok' : 'Err'} in ${end - begin}ms`);
+    return result;
+});
+
+export const serverManageProc = authProc.input(z.object({ serverId: z.number() })).use(({ ctx, next, input }) => {
+    if (!ctx.auth.authorizedServers.includes(input.serverId)) {
+        trpcLogger.warn(`Unauthorized ServerManageProc[${input.serverId}] call from id ${ctx.auth.id} (${ctx.ip})`);
+        throw new TRPCError({
+            code: 'FORBIDDEN',
+        });
+    }
+    return next({ ctx });
+});

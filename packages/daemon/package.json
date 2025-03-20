@@ -20,6 +20,7 @@
     "express": "^5.0.0",
     "jose": "^6.0.10",
     "jsonwebtoken": "^9.0.2",
+    "log4js": "^6.9.1",
     "smart-buffer": "^4.2.0",
     "tanebi": "^0.1.3"
   },
