@@ -3,11 +3,11 @@ import { Bot } from 'tanebi';
 import cors from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { appRouter } from '@/trpc';
-import { createAuthContext } from '@/common/auth';
 import { PrismaClient } from '@prisma/client';
 import log4js from 'log4js';
 import * as http from 'node:http';
 import { promisify } from 'node:util';
+import { createAuthContext } from '@/common/auth';
 
 log4js.configure({
     appenders: {
@@ -54,7 +54,7 @@ export class App {
             createContext: async ({ req }) => {
                 return {
                     ip: req.headers['x-forwarded-for'] as string || req.ip || 'unknown',
-                    ...(await createAuthContext(req.headers.authorization)),
+                    auth: await createAuthContext(req.headers.authorization),
                     prisma: prisma,
                     config: config,
                     callbackMap: this.callbackMap,

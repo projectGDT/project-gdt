@@ -54,9 +54,9 @@ export async function verifyJwt(token: string) {
     });
 }
 
-export async function createAuthContext(authorization: string | undefined): Promise<Pick<Context, 'auth'>> {
+export async function createAuthContext(authorization: string | undefined): Promise<Context['auth']> {
     if (!authorization || !authorization.startsWith('Bearer ')) {
-        return {};
+        return undefined;
     }
-    return { auth: await verifyJwt(authorization.slice(7)) };
+    return await verifyJwt(authorization.slice(7));
 }
