@@ -6,7 +6,12 @@ function ProfileDisplay({ uniqueIdProvider, uniqueId, cachedPlayerName }: Profil
     <ListItemButton>
       {uniqueIdProvider === -1 && (
         <ListItemAvatar>
-          <Avatar variant={'square'} src={`https://minotar.net/helm/${uniqueId}`} />
+          <Avatar variant={'square'} src={`https://starlightskins.lunareclipse.studio/render/isometric/${uniqueId}/head`} />
+        </ListItemAvatar>
+      )}
+      {uniqueIdProvider === -3 && (
+        <ListItemAvatar>
+          <Avatar variant={'square'} src={`https://starlightskins.lunareclipse.studio/render/isometric/.${uniqueId}/head`} />
         </ListItemAvatar>
       )}
       <ListItemText primary={cachedPlayerName} secondary={uniqueId} />
