@@ -15,7 +15,7 @@ const botLogger = getLogger('bot');
 function installLogger(bot: Bot) {
     bot.onDebug((module, message) => botLogger.debug(`[${module}] ${message}`));
     bot.onInfo((module, message) => botLogger.info(`[${module}] ${message}`));
-    bot.onWarning((module, message) => botLogger.warn(`[${module}] ${message}`));
+    bot.onWarning((module, message, e) => botLogger.warn(`[${module}] ${message}`, e));
 }
 
 export async function createOnlineBot(signApiUrl: string) {
