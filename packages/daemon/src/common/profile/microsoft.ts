@@ -24,6 +24,7 @@
 import * as crypto from 'node:crypto';
 import { SmartBuffer } from 'smart-buffer';
 import { exportJWK, JWK } from 'jose';
+import { z } from 'zod';
 
 const Endpoints = {
     PCXSTSRelyingParty: 'rp://api.minecraftservices.com/',
@@ -49,47 +50,36 @@ const minecraftJavaTitle = '00000000402b5328';
 const scope = 'service::user.auth.xboxlive.com::MBI_SSL';
 
 export class MicrosoftAuthSession {
-    private keyPair: crypto.KeyPairKeyObjectResult;
-    private jwk?: (JWK & { alg: string; use: string; });
-    private readonly alivePeriod: number;
-    private pending: boolean = true;
+    keyPair: crypto.KeyPairKeyObjectResult;
+    jwk?: (JWK & { alg: string; use: string; });
+    readonly alivePeriod: number;
+    pending: boolean = true;
+    cookies: string[] = [];
 
-    constructor(
-        onCode: (userCode: string, verificationUri: string) => void | Promise<void>,
-        onError: (err: unknown) => void,
-        onJavaProfile: (uuid: string, playerName: string) => void | Promise<void>,
-        alivePeriodInSecond?: number,
-    ) {
+    private constructor(alivePeriodInSecond?: number) {
         this.keyPair = crypto.generateKeyPairSync('ec', {
             namedCurve: 'P-256',
         });
         this.alivePeriod = alivePeriodInSecond ? (
             alivePeriodInSecond > 900 ? 900 : alivePeriodInSecond
         ) * 1000 : 180 * 1000;
-        exportJWK(this.keyPair.publicKey).then(jwk => ({
-            ...jwk,
-            alg: 'ES256',
-            use: 'sig',
-        })).then(async result => {
-            this.jwk = result;
-            const deviceCodeInit = await this.doDeviceCodeAuth();
-            onCode(deviceCodeInit.user_code, deviceCodeInit.verification_uri);
-            const msaToken = await this.awaitAccessToken(deviceCodeInit.device_code, 5);
-            const deviceToken = await this.getDeviceToken();
-            const xstsTokenResp = await this.doSisuAuth(msaToken, deviceToken);
-            const mcaToken = await this.getMinecraftAccessToken(xstsTokenResp.Token, xstsTokenResp.DisplayClaims.xui[0].uhs);
-            const profile = await this.getProfile(mcaToken);
-            onJavaProfile(
-                `${profile.id.slice(0, 8)}-${profile.id.slice(8, 12)}-${profile.id.slice(12, 16)}-${profile.id.slice(16, 20)}-${profile.id.slice(20)}`,
-                profile.name);
-        }).catch(onError);
     }
 
     stopPending() {
         this.pending = false;
     }
 
-    private async doDeviceCodeAuth() {
+    static async create(alivePeriodInSecond?: number) {
+        const session = new MicrosoftAuthSession(alivePeriodInSecond);
+        session.jwk = await exportJWK(session.keyPair.publicKey).then(jwk => ({
+            ...jwk,
+            alg: 'ES256',
+            use: 'sig',
+        }));
+        return session;
+    }
+
+    async doDeviceCodeAuth() {
         return await fetch(Endpoints.LiveDeviceCodeRequest, {
             method: 'POST',
             body: new URLSearchParams({
@@ -101,10 +91,19 @@ export class MicrosoftAuthSession {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             credentials: 'include',
-        }).then(res => res.json());
+        }).then(res => {
+            if (res.headers.get('set-cookie')) {
+                const cookie = res.headers.get('set-cookie');
+                if (cookie) {
+                    const [kv] = cookie.split(';');
+                    this.cookies.push(kv);
+                }
+            }
+            return res.json();
+        });
     }
 
-    private async awaitAccessToken(deviceCode: string, interval: number) {
+    async awaitAccessToken(deviceCode: string, interval: number) {
         const expireTime = Date.now() + this.alivePeriod;
         while (Date.now() < expireTime && this.pending) {
             await new Promise(resolve => setTimeout(resolve, interval * 1000)); // delay {interval} seconds
@@ -117,23 +116,25 @@ export class MicrosoftAuthSession {
                 }).toString(),
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'Cookie': this.cookies.join('; '),
                 },
             }).then(res => res.json()).then(body => {
                 if (body.error) {
-                    if (body.error !== 'authorization_pending')
-                        throw 'internal-error'; // uncaught in this function
-                    else return null; // still waiting
+                    if (body.error === 'authorization_pending') {
+                        return null;
+                    } else {
+                        throw new Error(body.error);
+                    }
                 } else {
                     return body.access_token as string;
                 }
             });
             if (nullOrToken) return nullOrToken;
         }
-        // dang dak ngo fa dou ze liu
-        throw this.pending ? 'timeout' : 'disconnected';
+        return null;
     }
 
-    private async getDeviceToken() {
+    async getDeviceToken() {
         const body = JSON.stringify({
             Properties: {
                 AuthMethod: 'ProofOfPossession',
@@ -147,7 +148,7 @@ export class MicrosoftAuthSession {
             TokenType: 'JWT',
         });
 
-        return await fetch(Endpoints.XboxDeviceAuth, {
+        return z.string().parse(await fetch(Endpoints.XboxDeviceAuth, {
             method: 'POST',
             headers: {
                 'Cache-Control': 'no-store, must-revalidate, no-cache',
@@ -157,10 +158,10 @@ export class MicrosoftAuthSession {
                 'x-xbl-contract-version': '1',
             },
             body,
-        }).then(res => res.json()).then(body => body.Token);
+        }).then(res => res.json()).then(body => body.Token));
     }
 
-    private async doSisuAuth(accessToken: string, deviceToken: string) {
+    async doSisuAuth(accessToken: string, deviceToken: string) {
         const body = JSON.stringify({
             AccessToken: `t=${accessToken}`,
             AppId: minecraftJavaTitle,
@@ -181,7 +182,7 @@ export class MicrosoftAuthSession {
         }).then(res => res.json()).then(body => body.AuthorizationToken);
     }
 
-    private async getMinecraftAccessToken(xstsToken: string, userHash: string) {
+    async getMinecraftAccessToken(xstsToken: string, userHash: string) {
         return await fetch(Endpoints.MinecraftServicesLogWithXbox, {
             method: 'POST',
             headers: {
@@ -194,7 +195,7 @@ export class MicrosoftAuthSession {
         }).then(res => res.json()).then(body => body.access_token);
     }
 
-    private async getProfile(minecraftAccessToken: string) {
+    async getProfile(minecraftAccessToken: string) {
         return await fetch(Endpoints.MinecraftServicesProfile, {
             method: 'GET',
             headers: {
@@ -237,4 +238,3 @@ export class MicrosoftAuthSession {
         return header.toBuffer();
     }
 }
-

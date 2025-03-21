@@ -317,10 +317,10 @@ export const dict = {
         javaMicrosoft: {
           title: 'Java 版正版（微软）Profile 绑定',
           step1: {
-            title: 'Step 1 - 设备码认证',
+            title: '设备码认证',
             hint: '请打开链接并完成后续操作。点击时会打开一个新标签页，请在完成操作后回到原先的标签页。',
           },
-          complete: '...没有 Step 2！已经完成啦！',
+          complete: '绑定完成！',
           fail: {
             internalError: '服务器出现了内部错误。请检查你的微软账号是否拥有 Minecraft。',
             timeout: '操作超时。',

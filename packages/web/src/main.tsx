@@ -9,6 +9,7 @@ import Panel from './pages/Panel.tsx';
 import { SettingsLayout, Settings } from './pages/panel/Settings.tsx';
 import Profile from './pages/panel/settings/Profile.tsx';
 import Xbox from './pages/panel/settings/profile/Xbox.tsx';
+import JavaMicrosoft from './pages/panel/settings/profile/JavaMicrosoft.tsx';
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
               {
                 path: 'profile',
                 element: <Profile />,
+              },
+              {
+                path: 'profile/java-microsoft',
+                element: <JavaMicrosoft />,
               },
               {
                 path: 'profile/xbox',

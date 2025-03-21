@@ -7,7 +7,7 @@ import { getLatestForm, joinByInvitationCode, submitApply } from '@/trpc/server/
 import { getServerInnerInfo, getServerPublicInfo } from '@/trpc/server/info';
 import { router } from '@/common/trpc';
 import { checkChatId, checkUsername, registerSubmit } from '@/trpc/register';
-import { bindXboxProfile, deleteProfile, getProfiles } from '@/trpc/profile';
+import { bindJavaMicrosoftProfile, bindXboxProfile, deleteProfile, getProfiles } from '@/trpc/profile';
 
 export const appRouter = router({
     login: login,
@@ -42,6 +42,7 @@ export const appRouter = router({
         profile: {
             get: getProfiles,
             bind: {
+                javaMicrosoft: bindJavaMicrosoftProfile,
                 xbox: bindXboxProfile,
             },
             delete: deleteProfile,
