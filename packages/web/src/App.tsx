@@ -78,7 +78,7 @@ function App() {
         <AppBar position={'fixed'} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Toolbar disableGutters sx={{ paddingX: 2 }}>
             <Avatar src={'/logo.svg'} sx={{ width: 40, height: 40 }} variant={'square'} />
-            <Typography variant={'h6'} sx={{ paddingX: 1, flexGrow: 1 }}>
+            <Typography variant={'h6'} sx={{ paddingX: 1, flexGrow: 1, userSelect: 'none' }}>
               <b>projectGDT</b>
             </Typography>
             <AccountMenu />
