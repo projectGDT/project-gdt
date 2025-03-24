@@ -6,12 +6,12 @@ function ProfileDisplay({ uniqueIdProvider, uniqueId, cachedPlayerName }: Profil
     <ListItemButton>
       {uniqueIdProvider === -1 && (
         <ListItemAvatar>
-          <Avatar variant={'square'} src={`https://starlightskins.lunareclipse.studio/render/isometric/${uniqueId}/head`} />
+          <Avatar variant={'square'} src={`https://starlightskins.lunareclipse.studio/render/pixel/${uniqueId}/face`} />
         </ListItemAvatar>
       )}
       {uniqueIdProvider === -3 && (
         <ListItemAvatar>
-          <Avatar variant={'square'} src={`https://starlightskins.lunareclipse.studio/render/isometric/.${uniqueId}/head`} />
+          <Avatar variant={'square'} src={`https://starlightskins.lunareclipse.studio/render/pixel/.${uniqueId}/face`} />
         </ListItemAvatar>
       )}
       <ListItemText primary={cachedPlayerName} secondary={uniqueId} />
