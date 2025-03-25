@@ -1,4 +1,15 @@
-import { Alert, Box, Button, Paper, Snackbar, Step, StepLabel, Stepper, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Paper,
+  Snackbar,
+  Step,
+  StepContent,
+  StepLabel,
+  Stepper,
+  Typography,
+} from '@mui/material';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { dict } from '../common/dict.tsx';
 import { useState } from 'react';
@@ -201,7 +212,7 @@ function Register() {
   ];
 
   return (
-    <Box display={'flex'} flexDirection={'column'} alignItems={'stretch'} paddingX={'30%'} flexGrow={1}>
+    <Box display={'flex'} flexDirection={'column'} alignItems={'stretch'} paddingX={'25%'} flexGrow={1}>
       <Box display={'flex'} alignItems={'center'} flexGrow={1}>
         <Box display={'flex'} flexDirection={'column'} gap={2} flexGrow={1}>
           <Box textAlign={'center'} padding={2}>
@@ -213,18 +224,20 @@ function Register() {
                 {errMsg}
               </Alert>
             </Snackbar>
-            <Stepper activeStep={activeStep} alternativeLabel>
+            <Stepper activeStep={activeStep} orientation={'vertical'}>
               <Step key={'submit'}>
                 <StepLabel>{dict.register.submit.label}</StepLabel>
+                <StepContent>{steps[0]}</StepContent>
               </Step>
               <Step key={'verify'}>
                 <StepLabel>{dict.register.verify.label}</StepLabel>
+                <StepContent>{steps[1]}</StepContent>
               </Step>
               <Step key={'success'}>
                 <StepLabel>{dict.register.success.label}</StepLabel>
+                <StepContent>{steps[2]}</StepContent>
               </Step>
             </Stepper>
-            {steps[activeStep]}
           </Paper>
         </Box>
       </Box>
